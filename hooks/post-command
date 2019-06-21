@@ -44,7 +44,11 @@ if [[ -n "${BUILDKITE_PLUGIN_CACHE_CACHE_KEY:-}" ]] ; then
 	  rsync -a --delete "${paths[*]}/" "${BUILDKITE_PLUGIN_CACHE_RSYNC_STORAGE}/${BUILDKITE_ORGANIZATION_SLUG}/${BUILDKITE_PIPELINE_SLUG}/${cache_key}/${paths[*]}/"
       else
 	  echo "--- :aws: :amazon-s3: sync ${paths[*]}"
-	  aws s3 sync "${paths[*]}" "s3://${bucket}/${paths[*]}/" --profile="${BUILDKITE_PLUGIN_CACHE_S3_PROFILE}" --delete
+    if [ -z "$BUILDKITE_PLUGIN_CACHE_S3_PROFILE" ]; then
+      aws s3 sync "${paths[*]}" "s3://${bucket}/${paths[*]}/" --delete
+    else
+      aws s3 sync "${paths[*]}" "s3://${bucket}/${paths[*]}/" --profile="${BUILDKITE_PLUGIN_CACHE_S3_PROFILE}" --delete
+    fi
       fi
 
   elif [ "${#paths[@]}" -gt 1 ]; then
@@ -55,7 +59,11 @@ if [[ -n "${BUILDKITE_PLUGIN_CACHE_CACHE_KEY:-}" ]] ; then
 	    rsync -a --delete "${path}/" "${BUILDKITE_PLUGIN_CACHE_RSYNC_STORAGE}/${BUILDKITE_ORGANIZATION_SLUG}/${BUILDKITE_PIPELINE_SLUG}/${cache_key}/${path}/"
 	else
             echo "--- :aws: :amazon-s3: sync ${path}"
-            aws s3 sync "${path}" "s3://${bucket}/${path}/" --profile="${BUILDKITE_PLUGIN_CACHE_S3_PROFILE}" --delete
+            if [ -z "$BUILDKITE_PLUGIN_CACHE_S3_PROFILE" ]; then
+              aws s3 sync "${path}" "s3://${bucket}/${path}/" --delete
+            else
+              aws s3 sync "${path}" "s3://${bucket}/${path}/" --profile="${BUILDKITE_PLUGIN_CACHE_S3_PROFILE}" --delete
+            fi
 	fi
     done
   fi
