@@ -1,10 +1,12 @@
 #!/bin/bash
 # shellcheck disable=SC2001
-set -eo pipefail
+set -euo pipefail
 
 if [[ "${BUILDKITE_PLUGIN_CACHE_DEBUG:-false}" =~ (true|on|1) ]] ; then
   set -x
 fi
+
+BUILDKITE_PLUGIN_CACHE_S3_PROFILE=${BUILDKITE_PLUGIN_CACHE_S3_PROFILE:-""}
 
 if [[ -n "${BUILDKITE_PLUGIN_CACHE_CACHE_KEY:-}" ]] ; then
 
